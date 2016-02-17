@@ -262,3 +262,112 @@ daniel@casadocodigo:~/backup$ unzip backup.zip
 
 Capítulo 5
 Entendendo a estrutura de diretórios
+
+A estrutura de diretórios
+
+Cada diretório do sistema possui arquivos que são mantidos seguindo regras defini- das pela FHS (Filesystem Hierarchy Standard). No Ubuntu a estrutura de diretórios segue o padrão LSB (Linux Standard Base), que por sua vez segue a especificação do FHS. Esses padrões são importantes pois ajudam a manter a compatibilidade entre as variações de distribuições Linux.
+
+Nesta estrutura, o FHS determina que obrigatoriamente uma distribuição Linux deve conter 14 diretórios. Veremos cada um deles
+
+5.3 Os diretórios /proc e /sys
+
+O diretório /proc contém arquivos temporários de processos em execução no sis- tema. Em outras palavras, é um diretório virtual usado pelo kernel. Nele são man- tidos configurações atuais do sistema e dados estatísticos.
+
+Assim como o diretório /proc, o /sys armazena quase o mesmo conteúdo porém de forma mais organizada para podermos administra
+
+Capítulo 6
+Administração de usuários
+
+As restrições implementadas no sistema de permissões são muito eficientes. Esse esquema de permissões é fundamental para o funcionamento do sistema por com- pleto. As permissões consistem em um conjunto de três regras: leitura, escrita e execução. É graças a esse esquema de permissões que não vemos sistemas Linux infectados por malwares ou vírus.
+
+Gerenciando usuários
+Para entender sobre o controle de usuários, vamos dividir esta seção em três catego- rias:
+1) SuperUsuário(sudo)ou Administrador;
+2) Usuário de Sistema;
+3) Usuário Comum.
+
+Usuário Administrador e sudo
+No sistema, esse usuário é chamado de root. Ele é responsável por controlar todo o sistema e não possui restrições. Sempre que executamos algum programa ou tarefa que necessite de poderes administrativos, precisamos do root, que é chamado por meio do comando sudo.
+
+Usuários de sistema
+São usuários que não necessitam logar no sistema – eles existem para contro- lar serviços e normalmente não possuem senhas. Um bom exemplo é o usuário www-data, que pode ser usado para administrar servidores web como Apache e Nginx.
+
+Usuários comuns
+São as contas criadas para o utilizadores do sistema. Essencialmente, eles podem executar tarefas básicas como criar e editar documentos, navegar na internet, assistir vídeos etc. A conta daniel é um exemplo de usuário comum, diferente da conta root que é utilizada para administrar o sistema.
+
+6.2 Permissões
+Nesta seção abordaremos o suficiente para termos uma referência sobre permissões de arquivos e usuários. As permissões são opções que permitem um usuário ter controle de acesso, leitura, gravação e execução de arquivos.
+Existem três tipos de permissões: r (leitura), w (escrita) e x (execução).
+
+Para listar as permissões de um arquivo ou diretório, podemos usar o comando ls, seguido da opção -l (long listing). Assim teremos uma listagem detalhada dos arquivos:
+daniel@casadocodigo:~$ ls -l
+
+No começo, isso pode parecer grego para nós. É comum uma pequena dificul- dade até se acostumar com tantas letrinhas e abreviações. Vamos entender detalha- damente o significado da listagem exibida:
+• -: significa “desabilitado” ou permissão negada;
+• r: permissão de leitura, apenas lê um arquivo;
+• w: permissão de escrita, pode escrever em arquivos e diretórios;
+• x: permissão para executar um arquivo.
+
+A aplicação de permissões aos arquivos está ligada a três entidades, que são clas- ses de acesso aos arquivos:
+• u: usuário dono do arquivo;
+• g: grupo a que o arquivo pertence;
+• o: outros usuários que não sejam o dono nem pertençam ao grupo.
+Quando listamos com ls -l, os 10 primeiros caracteres indicam o modo do arquivo:
+
+6.3 Atribuindo permissões
+O chmod é o comando para atribuir permissões de arquivos. Basicamente, ele atua diretamente nos níveis dono, grupo e outros.
+A sintaxe de uso do chmod é a seguinte: chmod [opções] modo arquivo
+O modo pode ser representado utilizando notação simbólica ou octal, veremos as duas formas. A seguir, uma lista das opções para o comando:
+• -c: lista informações sobre os arquivos modificados;
+• -f: ignora mensagens de erro;
+• -R: modo recursivo, altera as permissões de todos os arquivos e diretórios; • -v: lista de forma detalhada as alterações de atributo.
+Antes de prosseguir é importante entendermos sobre bits de atributo! 
+
+Bits de atributo
+
+Bits de atributo são um controle adicional às permissões de arquivos. As entida- des dono, grupo e outros têm suas configurações setadas pelo dono do arquivo. Essas configurações podem ser representadas também pelos bits de atributo, ou seja, assim como existem três entidades, também existem três bits de atributo, que podem estar ligados ou desligados:
+Bit SetUID permite que um arquivo seja executado da mesma forma que é exe- cutado pelo dono.
+Bit SetGID permite que um arquivo seja executado como se fosse parte do grupo de seu dono. Quando um arquivo é criado em um diretório que possui este bit ativo, ele é criado com o mesmo grupo do diretório.
+Bit Sticky ativa uma proteção para o arquivo e não permite que ele seja apagado, a não ser pelo próprio dono.
+A representação simbólica destes bits é lida da esquerda para a direita através das siglas SST, onde o primeiro S representa o SetUID, o segundo S representa o SetGID e o T representa o Sticky. Para indicar se um bit está ativo ou inativo, usa-se (1 ou +) para ativo e (0 ou -) para inativo.
+
+Os tipos de notações
+
+A notação octal converte cada grupo de três bits em um caractere que vai de 0 a 7.
+Grupos:
+Simbólica:
+Binária:
+Octal:         7         5         4
+Dono  |   Grupo   | Outros
+rwx       r-x       r--
+111       101       100
+
+Podemos notar que o arquivo possui permissão de leitura e escrita para o dono e grupo, e permissão de apenas leitura para outros. Fazendo uso do chmod vamos alterar as permissões deste arquivo:
+daniel@casadocodigo:~$ chmod u=rw,g=rw,o=rw agenda
+
+Teste o chmod usando a opção -v e veja a informação que ele retorna:
+daniel@casadocodigo:~$ chmod -v 664 agenda
+
+Retornamos a permissão anterior usando o formato octal. A opção -v do chmod nos mostra duas notaçõesm, de modo que fica fácil comparar e entender o que estamos fazendo.
+
+6.4 Criando grupos
+
+Agora que já entendemos um pouco sobre usuários, grupos e permissões, vamos praticar e conhecer mais alguns comandos.
+Sabemos que um usuário deve pertencer a um grupo e pode ser adicionado a ou- tros grupos. Para criar um novo grupo, usamos o comando addgroup – criaremos um grupo chamado suporte:
+daniel@casadocodigo:~$ sudo addgroup suporte
+
+Note que, ao criar o grupo automaticamente, ele recebe o seu número GID.
+
+riando usuários
+Para criar usuários, existe o comando adduser, que pode também adicionar usuá- rios em grupos e até criar novos grupos.
+adduser pauloiráadicionarousuáriopaulosolicitandoasinformaçõesadi- cionais como: nome, senha, grupo, pasta home
+
+daniel@casadocodigo:~$ id paulo
+
+Agora que já criamos um novo grupo e um novo usuário, vamos adicionar o usuário paulo ao grupo suporte. Para isso, utilize o comando addgroup que,além de criar um novo grupo como vimos anteriormente, também pode adicionar usuários a outros grupos:
+daniel@casadocodigo:~$ sudo addgroup paulo suporte
+
+6.6 Alterando grupos
+Como vimos no inicio do capítulo, cada arquivo e diretório possui um dono e um grupo. Tanto o dono como o grupo ao qual um arquivo ou diretório pertence podem ser alterados. Para isso, usamos os comandos chown e chgrp.
+Para testá-los, vamos usar o arquivo agenda que criamos anteriormente:
+daniel@casadocodigo:~$ ls -l agenda
