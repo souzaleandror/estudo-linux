@@ -120,3 +120,145 @@ Um passeio fora do ambiente gráfico
 Além do ambiente gráfico no Linux, existe ainda 6 ambientes de linha de comando, conhecidos pelo nome de TTY (TeleTYpe) ou ainda terminais virtuais. O TTY cor- responde ao tipo dos primeiros terminais usados em computadores.
 
 Para ter acesso a esses ambientes, usamos uma combinação das teclas Ctrl + Alt + FsendoqueFcorrespondedasteclasF1aF6,aF7retornaaoambientegrá- fico.
+
+Capítulo 3
+Manipulando arquivos
+
+O Vi é o editor básico disponível em grande parte das distribuições Linux. Atual- mente este editor é oferecido com mais recursos e recebe o nome de Vim (VI iMpro- ved). O Vim é um editor de aspecto simples, porém bastante flexível. Em seguida, veremos o básico sobre ele.
+
+Ao entrar no vi, ele é aberto direto no modo visual. Para editar um arquivo, usamos os modos de inserção, substituição e deleção. Sempre que precisamos voltar ao modo visual, usa-se a tecla Esc.
+
+No vim podemos navegar pelo arquivo usando as teclas direcionais ou as teclas h, j, k e l:
+• h, move para a esquerda;
+• j, move para baixo (próxima linha); • k, move para cima (linha anterior);
+• k, move para cima (linha anterior);
+ l, move para a direita.
+Mais comandos que facilitam a movimentação:
+• G move para a última linha do arquivo;
+• gg move para a primeira linha do arquivo; • 0 move o cursor para o início da linha;
+• $ move o cursor para o final da linha.
+
+Alguns comandos básicos para ajudar na inserção de texto:
+• i para inserir texto antes do cursor;
+• a para inserir texto depois do cursor;
+• A para inserir texto no final de uma linha onde se encontra o cursor; • o para adicionar uma linha abaixo da linha atual;
+• O para adicionar uma linha acima da linha atual.
+
+
+Temos também comandos para alteração e localização no modo visual:
+• x deleta o caractere onde está o cursor;
+• dd deleta a linha atual;
+• u desfaz a última modificação no arquivo;
+• yy copia uma linha, p cola o que foi copiado;
+• /palavra busca pela palavra ou caractere em todo o arquivo.
+
+https://code.google.com/p/vimbook/
+
+Se preferir um screencast, o Fabio Akita disponibilizou gratuitamente um vídeo com 1 hora de duração sobre o vim para iniciantes:
+http://blip.tv/akitaonrails/screencast-come-ando-com-vim-6075050
+
+O editor Nano
+
+Observando o menu inferior do editor nano notamos várias funções. Vale lem- brar que ^ é o mesmo que Ctrl, sendo assim ^G significa Ctrl + G.
+Alguns comandos básicos do nano:
+• ^G apresenta a tela de ajuda sobre mais comandos do editor;
+• ^Xsaidoeditor;seoarquivonãoestiversalvoserásolicitadoparasalvarantes de sair;
+• ^O salva um arquivo;
+• ^W busca por uma palavra dentro do arquivo.
+
+
+3.3 Trabalhando com o Cat
+
+Faça cat > agenda e tecle Enter. Em seguida digite as informações, e no final tecle Ctrl + d. Isto vai encerrar a digitação e salvar os dados no arquivo agenda
+
+O cat disponibiliza opções para exibir <TAB> no arquivo -t, o fim das linhas de um arquivo, ou seja, onde demos ENTER -e. Faça um teste com as duas opções
+
+daniel@casadocodigo:~$ cat -et agenda
+
+Note que foram exibidos caracteres ^, que representam o <TAB>, e o $, que representa o fim da linha ou <ENTER>. Existe também a opção de enumerar as linhas -n
+
+daniel@casadocodigo:~$ cat -n agenda
+
+Vamos à instrução de concatenação de arquivos. Para isso faça o seguinte: cat vim_basico.txt agenda > concatenando.txt:
+daniel@casadocodigo:~$ cat vim_basico.txt agenda > concatenando.txt
+
+3.4 Exibindo o início e o fim de arquivos
+É interessante saber sobre dois comandos com a função de exibir o conteúdo de um arquivo do cat: são eles o head e tail.
+
+O head mostra o início dos dados em um arquivo. Por padrão ele exibe as 10 primeiras linhas do arquivo, mas utilizando a opção -n podemos limitar o número de linhas:
+daniel@casadocodigo:~$ head -n 3 concatenando.txt
+
+Já o tail mostra o final dos dados do arquivo e possui a mesma opção para limitar a quantidade de linhas, -n:
+daniel@casadocodigo:~$ tail -n 5 concatenando.txt
+
+Capítulo 4
+Compactação e descompactação de arquivos
+
+4.1 Conhecendo o tar
+O tar é excelente para agrupar vários arquivos em apenas um. Isso, na prática, evita que precisemos fazer várias transferências de arquivos entre computadores, en- viando apenas um único arquivo. Isso vai aparecer muito no decorrer do seu uso do Linux. É importante conhecê-lo bem.
+Basicamente existem três tipos de arquivos que são utilizados com o .tar: tar.gz ou .tgz e .tar.bz2.
+Ao utilizarmos o .tar, ele realiza uma cópia sem compactação dos arquivos
+
+passados como parâmetro, ou seja ele junta todos os arquivos em um único arquivo sem compactar.
+Algumas opções do tar:
+• -c cria um novo arquivo .tar e adiciona os arquivos a serem compactados; • -f indica que o destino é um arquivo em disco;
+• -v exibe o nome de cada arquivo compactado;
+• -x extrai os arquivos agrupados no arquivo .tar.
+
+Vamos testar o .tar na prática, juntaremos todos os nossos arquivos que ter- minam em .txt em apenas um. Para isso usaremos as opções -c e -f:
+
+daniel@casadocodigo:~$ tar -cf backup.tar *.txt
+
+Note que foi criado um arquivo chamado backup.tar, que representa a união de todos os arquivos com extensão .txt.
+Vamos fazer o reverso desta união, separando os arquivos usando as opções -x, -v e -f. Criaremos um novo diretório para melhor visualizar
+
+daniel@casadocodigo:~/backup$ tar xvf backup.tar
+
+O que acabamos de fazer foi criar uma pasta chamada backup, mover o arquivo backup.tar para dentro da pasta criada e fazer o processo reverso para separar os arquivos.
+
+O tipo .tar.gz
+O .tar.gz consiste em dois processos diferentes e interligados, sendo que pri- meiro ele cria um arquivo .tar e, em seguida, compacta utilizando o formato .gz. Neste caso, além de gerar um único arquivo com o .tar, ele será compactado, re- duzindo assim o seu tamanho.
+Ainda dentro da pasta backup, vamos testar a criação do nosso arquivo dessa vez compactado com .tar.gz
+
+daniel@casadocodigo:~/backup$ tar zcvf backup.tar.gz *.txt
+
+Note que agora temos o backup.tar.gz, o mesmo arquivo unido .tar, mas compactado com .gz. Podemos verificar o tamanho dos arquivos com o comando du para melhor entender o real efeito da compactação:
+daniel@casadocodigo:~/backup$ du -h backup.tar backup.tar.gz
+
+Veja que usando o .tar.gz o arquivo foi reduzido para 4 kbytes! Para descom- pactar arquivos .tar.gz usa-se as opções zxvf:
+daniel@casadocodigo:~/backup$ tar zxvf backup.tar.gz
+
+O tipo .tar.bz2
+Com o .tar.bz2 ocorre o mesmo caso que com o .tar.gz: a compactação com o formato .bz2 é mais eficiente que o .gz, porém é mais lenta na hora de gerar a cópia.
+Vamos criar um arquivo compactado com .tar.bz2 utilizando as opções jcvf e conferir a diferença entre os tamanhos com o comando du:
+daniel@casadocodigo:~/backup$ tar jcvf backup.tar.bz2 *.txt
+
+Não houve diferença entre os tamanhos nos formatos .gz e .bz2, já que esta- mos compactando pequenos arquivos texto. Porém é possível notar a diferença em arquivos maiores, por exemplo uma imagem ISO de um DVD.
+Para fazer a descompactação de formatos .bz2 usamos as opções jxvf:
+daniel@casadocodigo:~/backup$ tar jxvf backup.tar.bz2
+
+Podemos notar que, sempre que vamos compactar, a opção c é utilizada; e ao realizar a descompactação usamos a opção x. Já para o formato .tar.gz, usamos a opção z, e a opção j para o formato .tar.bz2.
+Pode parecer um pouco complicado memorizar todas essas opções no inicio, mas com a prática isso acaba se tornando natural.
+
+4.2 Conhecendo o gzip/gunzip
+Este é o programa de compressão mais utilizado no Linux. O gzip gera um arquivo no formato .gz. Sua forma de uso para compactar é bastante simples:
+daniel@casadocodigo:~/backup$ gzip -c -r *.txt > backup.gz
+
+As opções -c e -r respectivamente informam que queremos criar um arquivo e compactar. Ao executarmos a compactação de vários arquivos utilizando o gzip, os arquivos serão concatenados em um só e em seguida comprimidos no formato .gz
+
+Para descompactar usamos o gunzip, que pode ser utilizado com as opções -c e -v para exibir o conteúdo a ser descompactado e informações sobre o nível de compactação dos arquivos:
+daniel@casadocodigo:~/backup$ gunzip backup.gz
+
+No exemplo, ao executar a descompactação com gunzip, o nosso arquivo backup.gz deixará de existir pois por padrão o gunzip extrai o arquivo com- primido no formato .gz e exclui o arquivo compacto.
+
+4.3 Conhecendo o zip/unzip
+
+O comando zip, como o nome já sugere, cria um arquivo compacto no formato .zip, enquanto o unzip faz o trabalho inverso, descompactando.
+A forma de uso é muito simples:
+daniel@casadocodigo:~/backup$ zip backup.zip *.txt
+
+Para descompactar, use o comando unzip:
+daniel@casadocodigo:~/backup$ unzip backup.zip
+
+Capítulo 5
+Entendendo a estrutura de diretórios
