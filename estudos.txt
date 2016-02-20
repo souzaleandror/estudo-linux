@@ -371,3 +371,122 @@ daniel@casadocodigo:~$ sudo addgroup paulo suporte
 Como vimos no inicio do capítulo, cada arquivo e diretório possui um dono e um grupo. Tanto o dono como o grupo ao qual um arquivo ou diretório pertence podem ser alterados. Para isso, usamos os comandos chown e chgrp.
 Para testá-los, vamos usar o arquivo agenda que criamos anteriormente:
 daniel@casadocodigo:~$ ls -l agenda
+
+Capítulo 7
+Instalando pacotes e aplicativos
+
+Primeiramente, vamos entender o que é um pacote. Um pacote é um conjunto de arquivos agrupados para facilitar a instalação e distribuição de um programa. Ele pode conter scripts para listagem e checagem de dependências para configuração durante o processo de instalação de um aplicativo.
+No Ubuntu os pacotes são baseados em Debian e têm a extensão .deb.
+
+7.1 Gerenciador de pacotes
+
+7.2 Gerenciando pacotes com APT
+
+Veremos aqui um pouco sobre gerenciamento de pacotes no terminal utilizando a ferramenta APT (Advanced Packaging Tool). Para isso, usaremos o comando apt-get, que é uma interface para a ferramenta APT. Assim como o apt-get, existe outra interface para o APT, o aptitude. Mas em nossos estudos usaremos o apt-get para instalar, atualizar e remover aplicativos.
+
+Antes de prosseguir, vamos entender algumas opções do apt-get:
+• update: atualiza a lista de pacotes;
+• upgrade: atualiza todo o sistema;
+• install: instala um novo programa;
+• remove: desinstala um programa.
+
+Para entender melhor como funciona o apt-get, vamos fazer a instalação do Java. O pacote Oracle JDK foi removido do repositório oficial do Ubuntu de- vido à nova licença do Java. Por conta disso, usaremos um repositório alternativo para instalar o pacote do Java.
+
+daniel@casadocodigo:~$ sudo add-apt-repository ppa:webupd8team/java
+
+Após adicionar a nova fonte de repositório, é necessário atualizar a lista de pa- cotes – usaremos a opção update:
+
+daniel@casadocodigo:~$ sudo apt-get update
+Depois de atualizar a lista de pacotes, vamos finalmente instalar o Java, usando a opção install:
+daniel@casadocodigo:~$ sudo apt-get install oracle-java7-installer
+
+Ao rodar o comando anterior, o APT vai informar o que será instalado junto com as dependências. Quando o APT perguntar se deseja continuar, tecle Y para informar que sim:
+daniel@casadocodigo:~$ sudo apt-get install oracle-java7-installer
+
+Capítulo 8
+Prática, instalando Apache, PHP e MySQL
+
+daniel@casadocodigo:~$ apt-get update
+[sudo] password for daniel:
+Informe a senha do seu usuário e prossiga com o processo de atualização. Em seguida, podemos instalar o pacote build-essential:
+daniel@casadocodigo:~$ sudo apt-get install build-essential
+
+Agora instale o pacote apache2. Serão listadas as dependências que serão ins- taladas junto ao pacote apache2 – o sistema deve solicitar a confirmação para pros- seguir com a instalação. Faça:
+daniel@casadocodigo:~$ sudo apt-get install apache2
+Sempre que quiser obter informações sobre um pacote, utilize o comando apt-cache, que possui a seguinte sintaxe apt-cache show pacote. Faça um teste com o pacote apache2:
+daniel@casadocodigo:~$ sudo apt-cache show apache2
+
+gora que temos o web server Apache instalado e funcionando, podemos fazer testes para entender sobre serviços. Após a instalação, o web server fica disponível no sistema em forma de serviço; sendo assim, usaremos o comando service para verificar as opções disponíveis para o serviço apache2 que instalamos:
+daniel@casadocodigo:~$ sudo service apache2
+ * Usage: /etc/init.d/apache2 {start|stop|graceful-stop|restart|reload|
+ force-reload|start-htcacheclean|stop-htcacheclean|status}
+ daniel@casadocodigo:~$
+Note que o comando service executa o script de serviços apache2 locali- zado em /etc/init.d/apache2, que possui as várias opções como iniciar, parar, restartar e outras.
+
+daniel@casadocodigo:~$ sudo service apache2 stop
+
+8.2 Linkando arquivos
+
+O apache faz bastante uso de linkagem de arquivos em suas configurações, assim, agora temos exemplos mais ricos.
+Para fazer um link, utilizamos o comando ln -s, que cria um link simbólico para o arquivo de origem – seu conteúdo é o caminho do arquivo. Para entender melhor, observe a listagem nas configurações do apache:
+daniel@casadocodigo:/etc/apache2/sites-enabled$ ls -l
+
+8.3 Instalando e configurando o MySQL
+Vamos prosseguir instalando e configurando o MySQL. Ele é um sistema de geren- ciamento de banco de dados relacional bastante popular, muito usado em conjunto com aplicações bem conhecidas como o WordPress.
+
+O primeiro passo é instalar o pacote mysql-server, e para isso faça: daniel@casadocodigo:~$ sudo apt-get install mysql-server
+
+Após a instalação, verifique se o serviço mysql está rodando em seu sistema. Use o comando service com a opção status:
+daniel@casadocodigo:~$ sudo service mysql status
+
+Agora teste o mysql efetuando login no serviço com o usuário root: daniel@casadocodigo:~$ sudo mysql -u root -p
+Enter password:
+O mysql solicitará a senha de root que foi definida no processo de instalação. Após informá-la, você verá uma tela como a seguinte:
+
+Assim como o apache, o mysql também é um serviço e, como tal, possui as mesmas regras disponíveis no service. Isso possibilita parar, iniciar, recarregar, ver o status, igual fizemos no apache:
+daniel@casadocodigo:~$ sudo service mysql stop
+mysql stop/waiting
+daniel@casadocodigo:~$ sudo service mysql status
+mysql stop/waiting
+daniel@casadocodigo:~$ sudo service mysql start
+mysql start/running, process 12089
+daniel@casadocodigo:~$ sudo service mysql status
+mysql start/running, process 12089
+daniel@casadocodigo:~$
+
+8.4 Instalando e configurando o PHP
+
+daniel@casadocodigo:~$ sudo apt-get install php5 php-pear php5-mysql
+
+Agora que instalamos o php, precisamos ajustar o seu arquivo de configuração
+que está em /etc/php5/apache2/php.ini.
+
+mais descritivas e ativar logs. Para isso, vamos editar o php.ini. Utilize o vim ou nano:
+daniel@casadocodigo:~$ sudo vim /etc/php5/apache2/php.ini
+
+Com o arquivo aberto, busque por error_reporting. No vim, faça:
+/error_reporting =
+Essa instrução no vim irá buscar pelo texto error_reporting = no arquivo. Após encontrar, edite a linha e faça a seguinte alteração:
+De:
+error_reporting = E_ALL & ~E_DEPRECATED
+Para:
+error_reporting = E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|
+E_CORE_ERROR
+
+Desta forma, estamos alterando o formato das mensagens de erro do php para serem mais descritivas. Agora vamos especificar o arquivo de logs onde o php deverá salvar: busque no vim a diretiva error_log = e descomente apagando o ; no inicio da linha. Em seguida, insira o seguinte caminho:
+error_log = /var/log/php.log
+Pronto, agora os logs do php irão ser salvos no arquivo php.log localizado no diretório /var/log. Salve o arquivo, saia do editor e no vim faça: :wq.
+
+daniel@casadocodigo:~$ sudo service apache2 reload
+
+Crie um novo arquivo chamado de teste.php em /var/www, e com o vim faça:
+
+daniel@casadocodigo:~$ sudo vim /var/www/teste.php Insira no arquivo o seguinte trecho de código:
+
+<?php
+phpinfo(); ?>
+
+Salve o arquivo e saia do editor com :wq; em seguida confira o resultado no browser, acessando http://localhost/teste.php.
+
+Capítulo 9
+Entendendo processos
