@@ -490,3 +490,94 @@ Salve o arquivo e saia do editor com :wq; em seguida confira o resultado no brow
 
 Capítulo 9
 Entendendo processos
+
+9.1 O que são processos?
+A definição de processo apresentada por Tanenbaum no livro Sistemas Operacio- nais - Projeto e Implementação:
+A ideia-chave aqui é que um processo é um tipo de atividade. Ele tem um programa, entrada, saída e um estado. Um único processador pode ser compartilhado entre vá- rios processos, com algum algoritmo de agendamento sendo utilizado para determinar quando parar de trabalhar em um processo e servir a um diferente
+
+Um processo possui estados que definem o seu comportamento, são eles:
+• execução: o processo está ativo utilizando a CPU e outros recursos;
+• pronto ou espera: o processo está temporariamente parado permitindo
+que outro processo execute na sua frente;
+• bloqueado: o processo está parado aguardando a execução de algum evento
+para voltar ao estado de execução.
+
+Cada processo no Linux recebe um número para sua identificação conhecido por PID. Podemos vê-los com o comando ps:
+daniel@casadocodigo:~$ ps aux
+
+9.3 A identificação de processos
+Como vimos, um processo é identificado por seu PID (Process Identifier). Esse número é dado pelo sistema para cada processo, cada PID é único, então você nunca verá dois ou mais processos fazendo uso do mesmo PID.
+
+Cada processo também possui um usuário dono, dessa forma, o sistema veri- fica as permissões e sabe qual usuário pode executar um determinado processo. A identificação de donos é feita pelos números UID e GID.
+No Linux, todo usuário possui um número de identificação da mesma forma que os processos. Esse número é conhecido por UID (User Identifier) e o GID (Group Identifier).
+
+Execute o ps para obter a lista de processos do nosso usuário: daniel@casadocodigo:~$ ps
+ PID TTY
+1788 pts/0
+1847 pts/0
+    TIME CMD
+00:00:00 bash
+               00:00:00 ps
+daniel@casadocodigo:~$
+No caso, o usuário daniel possui apenas 2 processos em execução: o bash, que é o processo do shell, e o próprio ps, que foi o processo criado ao executar o comando ps.
+
+Assim como todos os comandos que vimos até agora, o ps também possui op- ções. Veremos algumas delas:
+• a: lista todos os processos existentes;
+• u: exibe o nome do usuário dono do processo;
+• x: lista os processos que não possuem relação com o terminal; • m: exibe a quantidade memória consumida por cada processo.
+
+daniel@casadocodigo:~$ ps aux
+
+Podemos contar todos os processos em execução fazendo uso de um comando que ainda não testamos: o wc. Basicamente o que ele faz é contar as linhas de um arquivo ou do conteúdo que for exibido no terminal, para isso utilizamos a opção wc -l. Para informar ao comando que queremos apenas a quantidade de linhas, o que faremos é executar o ps aux em combinação com o wc -l, usando o | (pipe), que é uma forma de encadeamento de processos:
+daniel@casadocodigo:~$ ps aux | wc -l
+
+O que o | fez foi encadear a execução do comando ps aux ao comando wc -l. Assim, ele pegou o resultado gerado do primeiro comando e passou para o se- gundo. A saída do wc nos mostra quantos processos ao todo temos rodando em nosso computador.
+
+Outro comando que ainda não vimos é o grep, que procura por uma expressão que pode ser uma palavra ou frase em um arquivo, ou ainda pode funcionar como filtro na saída de comandos. Vamos usá-lo para filtrar a lista de processos gerada com ps -A e buscar todos os processos do apache que estiverem em execução. A opção -A do comando ps é para exibir todos os processos em execução mas sem detalhes.
+daniel@casadocodigo:~$ ps -A | grep apache
+
+Veremos agora outro comando bastante usado para verificar processos, o top, que acompanha os processos atualizando as informações quase em tempo real. Exe- cute no terminal o top para vê-lo funcionando:
+
+Uma opção interessante é acompanhar os processos de um determinado usuário do sistema. Para isso usamos a opção -u e o nome do usuário:
+
+daniel@casadocodigo:~$ top -u daniel
+
+Uma outra opção ao top é o htop, que tem uma interface mais amigável. Ele não vem instalado por padrão, então vamos instalar para conhecê-lo:
+daniel@casadocodigo:~$ sudo apt-get install htop Após a instalação, execute htop:
+
+9.5 O que são sinais de processos?
+No Linux os sinais são uma forma de comunicação usada pelos processos para que o sistema consiga interferir em seu funcionamento. Na prática, ao receber um si- nal com instruções, um processo interpreta a ação que foi especificada no sinal e a executa.
+Alguns dos sinais mais conhecidos e usados por processos são: • KILL: sinal com função de encerrar um processo;
+• TERM: termina o processo após ele finalizar uma tarefa;
+• STOP: interrompe a execução de um processo;
+• CONT: ativa a execução de um processo que foi interrompido.
+
+Vamos interromper a execução do mysql enviando um sinal de STOP para o seu processo. Precisamos primeiro do número PID do mysql:
+daniel@casadocodigo:~$ ps -A | grep mysql
+
+Agora que temos o número PID do processo do mysql, vamos enviar o sinal de STOP para ele, interrompendo sua execução:
+daniel@casadocodigo:~$ sudo kill -STOP 1047
+
+bra um novo terminal, envie o sinal CONT para ativar a execução do processo que foi interrompido e veja o que acontece no terminal onde estamos tentando nos conectar ao mysql:
+daniel@casadocodigo:~$ sudo kill -CONT 1047
+daniel@casadocodigo:~$
+Ao executar o envio do sinal CONT para o processo interrompido do mysql, veja que ele voltou a funcionar normalmente.
+
+Outro comando bastante usado é o killall, quando não sabemos o PID ou quando temos vários processos do mesmo aplicativo com vários PIDs em execução, por exemplo o apache:
+daniel@casadocodigo:~$ ps -A | grep apache
+
+Note que temos vários PIDs e, por isso, enviar um sinal de cada vez para cada PID torna-se complicado. Neste caso usamos o killall e o nome do processo em vez do PID. Para interromper a execução do processo, faríamos:
+daniel@casadocodigo:~$ sudo killall -STOP apache2
+
+Os estados de um processo
+Basicamente existem 4 estados para um processo. Após sua criação, o seu es- tado corrente é executável; quando um processo está aguardando alguma ro- tina para ser executado, dizemos que ele está dormindo – esse estado é chamado de dormente –; se um processo está congelado e por algum motivo não pode ser exe- cutado, dizemos que seu estado é parado; se um processo é considerado morto, ou seja, foi finalizado, não está mais em execução mas por algum motivo ainda existe, dizemos que seu estado é de um processo zumbi.
+
+9.6 Processos e suas prioridades
+
+Em alguns casos, por exemplo tarefas de backup, setamos a prioridade para que o
+processo não consuma de forma inesperada recursos do computador como memória e CPU. Nesses casos, podemos usar 2 comandos: o nice e o renice.
+Por enquanto, vamos testar o renice e alterar a prioridade do processo que está executando o mysql:
+daniel@casadocodigo:~$ ps -A | grep mysql
+
+Agora que temos o PID do processo podemos alterar sua prioridade, para isso faça:
+daniel@casadocodigo:~$ sudo renice -19 2340
