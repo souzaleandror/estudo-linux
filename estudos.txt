@@ -581,3 +581,65 @@ daniel@casadocodigo:~$ ps -A | grep mysql
 
 Agora que temos o PID do processo podemos alterar sua prioridade, para isso faça:
 daniel@casadocodigo:~$ sudo renice -19 2340
+
+Capítulo 10
+Introdução a Shell Script
+
+Shell Script é a linguagem de programação utilizada pelo shell – no caso o shell é o nosso interpretador que vai ler os nossos programas e dizer ao processador o que fazer.
+
+10.1 O primeiro script
+Vamos ver um exemplo de um programa bem simples:
+
+#!/bin/bash
+# Nosso primeiro programa em Shell Script
+mkdir ~/relatorio
+ps aux > ~/relatorio/processos.txt
+echo "Programa executado com sucesso!"
+
+10.2 Executando o script
+
+Agora que alteramos a permissão do arquivo primeiro_programa.sh, po- demos executar da seguinte forma:
+daniel@casadocodigo:~$ ./primeiro_programa.sh
+
+10.3 Operações básicas
+
+mo toda linguagem de programação, Shell Script também trabalha com opera- ções numéricas, variáveis e estruturas de controle. Vamos implementar um exemplo básico contando o número de linhas de um arquivo. Para isso, crie um arquivo cha- mado conta_linhas.sh com o editor de sua escolha e insira o seguinte conteúdo:
+
+
+#!/bin/bash
+echo "Contando as linhas ..."
+sleep 5
+LINHAS=`cat ~/relatorio/processos.txt | wc -l`
+echo "Existem $LINHAS no arquivo."
+
+10.4 Estruturas de controle
+Vamos criar um pro- grama simples para verificar e informar se um arquivo existe no diretório home do nosso usuário. Para isso, crie um arquivo chamado verificador.sh:
+
+#!/bin/bash
+echo "Informe o nome do arquivo que deseja buscar:"
+read ARQUIVO
+CONSULTA=$(ls ~ | grep $ARQUIVO)
+if [ -z $CONSULTA ]; then
+  echo "$ARQUIVO não foi encontrado!"
+else
+  echo "Arquivo encontrado!"
+fi
+
+10.5 Realizando um backup agendado
+
+No Linux, o crontab é responsável por agendar tarefas para serem executa- das em um período de tempo determinado. Ele é gerenciado por um serviço chamado crond, que verifica a existencia de agendamentos que devem ser executados. O crontab realiza 2 tipos de agendamentos, agendamento dos usuários e agenda- mento do sistema.
+
+O comando crontab pode editar, listar e criar novos agendamentos para usuá- rios, veja as opções em crontab --help. Para verificar se existem tarefas agen- dadas para um determinado usuário faça:
+daniel@casadocodigo:~$ crontab -u daniel -l
+
+
+No exemplo ainda não existe uma tarefa agendada para o usuário daniel.
+O agendamento dos usuários é armazenado em /var/spool/cron/crontabs. Já os agendamentos para o sistema ficam em /etc, distribuídos em diretórios que podem ser organizados em agendamentos por hora, dia, semana e mês:
+daniel@casadocodigo:~$ ls -d /etc/cron.*
+
+O que a instrução faz é listar a cada minuto o conteúdo de home do usuário daniel e inserir o output da listagem no arquivo crontab.txt que será criado também em home. Note o uso do >>, que significa que sempre será inserido o conteúdo da listagem sempre após a última linha do arquivo crontab.txt. Mas e esse monte de * ?
+Cada * representa uma configuração no crontab, que indica:
+• minuto: vai de 0 a 59; • hora:vaide0a23;
+• dia:vaide1a31;
+• mês:vaide1a12;
+• dia da semana:vaide0a7.
