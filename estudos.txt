@@ -643,3 +643,55 @@ Cada * representa uma configuração no crontab, que indica:
 • dia:vaide1a31;
 • mês:vaide1a12;
 • dia da semana:vaide0a7.
+
+10.6 Um simples script de backup
+
+Vamos implementar agora o script para realizar o backup do diretório home do nosso usuário. Para isso, usaremos o comando tar e o comando date. O tar vai gerar uma cópia do home compactada, o date irá incrementar as cópias adicio- nando a informação do dia, mês, ano, hora e minuto em que o backup foi realizado.
+Primeiro vamos criar uma pasta chamada backup no diretório raiz (/) do nosso sistema:
+
+daniel@casadocodigo:~$ sudo mkdir /backup
+Crie um arquivo chamado backup.sh. Use um editor de sua escolha e imple-
+mente o seguinte script:
+#!/bin/bash
+# Script de backup /home/daniel
+sudo tar czf /backup/$(date +%d%m%Y-%H%M)-home.tar.gz -C /home/daniel .
+
+10.7 Personalizando o seu shell: PS1, PATH e outros
+
+É importante saber que existem variáveis locais e globais, sendo que as variáveis locais são restritas a um escopo definido e as globais ficam disponíveis para todo o sistema. Estas últimas são bastante conhecidas por variáveis de ambiente. A dife- rença entre elas está na criação:
+
+VARIAVEL_LOCAL="valor"
+export VARIAVEL_GLOBAL="valor"
+
+Para definir uma variável local, só precisamos atribuir um valor ao nome da va- riável. Para definir uma variável de ambiente, é necessário fazer uso do comando export antes de sua definição.
+
+Uma outra variável de sistema muito importante é o PATH, que armazena os caminhos absolutos de arquivos binários (executáveis) de aplicativos. Eles podem ser chamados sem a necessidade de informarmos o caminho completo.
+daniel@casadocodigo:~$ echo $PATH
+
+Para melhor entender, busque o caminho absoluto do vim. Para isso, utilize o comando whereis:
+daniel@casadocodigo:~$ whereis vim
+
+Como o $PATH armazena o trajeto /usr/bin, não precisamos informar o ca- minho inteiro ao executar o aplicativo vim, que seria /usr/bin/vim. Isto serve para praticamente quase todos os aplicativos. Podem aparecer casos em que seja ne- cessário alterar o valor da variável PATH, o que pode ser feito em /etc/profile ou de maneira mais organizada separando por scripts em /etc/profile.d.
+
+10.8 Alias
+Outro recurso que usaremos bastante é o alias, que cria um apelido para uma determinada instrução. Sua sintaxe é parecida com a definição de uma variável.
+Vamos ver a lista de alias que existe definida no sistema:
+daniel@casadocodigo:~$ alias
+
+Podemos criar o nosso próprio alias, por exemplo, para o comando clear. Em vez de digitarmos o clear para limpar o buffer do terminal, podemos ter um apelido chamado cl. Para isso, faça:
+daniel@casadocodigo:~$ alias cl='clear'
+
+10.9 Arquivos de configuração
+Quando nos logamos no sistema e abrimos um shell, esse shell é de login interativo e executa várias instruções de configurações para, por exemplo, customizar o bash ou disponibilizar um novo alias.
+Por padrão, ao logar no shell, ele vai ler o arquivo /etc/profile e executá- lo, aplicando as configurações para todos os usuários do sistema. Na sequência, após ler o /etc/profile, irá buscar por um dos seguintes arquivos, na pasta home do usuário:
+• ~/.profile
+• ~/.bash_profile • ~/.login
+• ~/.bashrc
+
+Para entender melhor, vamos criar um alias e defini-lo para ser carregado logo que chamamos um shell. No exemplo, vamos setar um novo alias apenas para o usuário daniel. Para isso, precisamos editar o arquivo .bashrc que existe na pasta home do nosso usuário:
+daniel@casadocodigo:~$ vim .bashrc
+
+alias cl='clear' # <--- Nosso novo alias
+
+Capítulo 11
+Compilando arquivos fonte
